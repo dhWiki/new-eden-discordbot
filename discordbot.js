@@ -7,6 +7,9 @@ var lastDevBlog = {
 var lastPatchNotes = {
 	title : ""
 };
+var lastEveNews = {
+	title : ""
+};
 var seconds = 300; //timer
 var timer = seconds * 1000;
 var bot = new Discord.Client();
@@ -30,6 +33,16 @@ bot.on("message", function(message){
 					lastDevBlog = devblogs[0]; //set new last article
 					console.log("New dev blog: "+lastDevBlog.link);
 					bot.sendMessage(message.channel, lastDevBlog.link, function(err){
+						if(err) console.log("error : "+channel.id+" " + err);
+					});
+				}
+			});
+			feed("https://newsfeed.eveonline.com/en-US/44/articles/page/1/20", function(err, evenews){
+				if(err) throw err;
+				if(!(evenews[0].title === lastEveNews.title)) {
+					lastEveNews = evenews[0]; //set new last article
+					console.log("New Eve news: "+lastEveNews.link);
+					bot.sendMessage(message.channel, lastEveNews.link, function(err){
 						if(err) console.log("error : "+channel.id+" " + err);
 					});
 				}
