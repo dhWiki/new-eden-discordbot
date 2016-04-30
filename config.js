@@ -7,6 +7,6 @@ config.discord.username = 'ech0opulse@gmail.com';
 config.discord.password = 'botpassword';
 
 config.admins = ['Echo Utrigas'];
-config.timer = 300; //Seconds
+config.timer = 5; //Seconds
 
 module.exports = config;

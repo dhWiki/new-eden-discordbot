@@ -2,6 +2,9 @@ var Discord = require('discord.js');
 var feed = require("feed-read");
 var moment = require('moment');
 var config = require('./config');
+var data = require('./data.js');
+var fs = require('fs');
+
 
 var YouTube = require('youtube-node');
 var youtube = new YouTube();
@@ -10,17 +13,6 @@ youtube.addParam('channelId', 'UCwF3VyalTHzL0L-GDlwtbRw'); //Eve online channel
 youtube.addParam('order', 'date'); //sort by date
 
 
-
-var lastDevBlog = {
-	title : ""
-};
-var lastPatchNotes = {
-	title : ""
-};
-var lastEveNews = {
-	title : ""
-};
-var lastYtLink = "";
 
 var seconds = config.timer;
 var timer = seconds * 1000;
@@ -54,32 +46,36 @@ bot.on("message", function(message){
 		bot.sendMessage(message.channel, "Bot turning ON!", function(err) {if(err) throw err;});
 
 		setInterval(function(){ 
+
 			feed("https://newsfeed.eveonline.com/en-US/2/articles/page/1/20", function(err, devblogs){
 				if(err) throw err;
-				if(!(devblogs[0].title === lastDevBlog.title)) {
-					lastDevBlog = devblogs[0]; //set new last article
-					console.log(getTime() + " - New dev blog: "+lastDevBlog.link);
-					bot.sendMessage(message.channel, lastDevBlog.link, function(err){
+				if(!(devblogs[0].title === data.lastDevBlog.title)) {
+					//data.lastDevBlog = devblogs[0]; //set new data.last article
+					data.setDev(devblogs[0].title);
+					console.log(getTime() + " - New dev blog: "+devblogs[0].link);
+					bot.sendMessage(message.channel, devblogs[0].link, function(err){
 						if(err) console.log(getTime() + " - error : "+channel.id+" " + err);
 					});
 				}
 			});
 			feed("https://newsfeed.eveonline.com/en-US/44/articles/page/1/20", function(err, evenews){
 				if(err) throw err;
-				if(!(evenews[0].title === lastEveNews.title)) {
-					lastEveNews = evenews[0]; //set new last article
-					console.log(getTime() + " - New Eve news: "+lastEveNews.link);
-					bot.sendMessage(message.channel, lastEveNews.link, function(err){
+				if(!(evenews[0].title === data.lastEveNews.title)) {
+					//data.lastEveNews = evenews[0]; //set new data.last article
+					data.setNews(evenews[0].title);
+					console.log(getTime() + " - New Eve news: "+evenews[0].link);
+					bot.sendMessage(message.channel, evenews[0].link, function(err){
 						if(err) console.log(getTime() + " - error : "+channel.id+" " + err);
 					});
 				}
 			});
 			feed("https://newsfeed.eveonline.com/en-US/15/articles/page/1/5", function(err, patchnotes){
 				if(err) throw err;
-				if(!(patchnotes[0].title === lastPatchNotes.title)) {
-					lastPatchNotes = patchnotes[0]; //set new last article
-					console.log(getTime() + " - New patch notes: "+lastPatchNotes.link);
-					bot.sendMessage(message.channel, lastPatchNotes.link, function(err){
+				if(!(patchnotes[0].title === data.lastPatchNotes.title)) {
+					//data.lastPatchNotes = patchnotes[0]; //set new data.last article
+					data.setPatch(patchnotes[0].title);
+					console.log(getTime() + " - New patch notes: "+patchnotes[0].link);
+					bot.sendMessage(message.channel, patchnotes[0].link, function(err){
 						if(err) console.log(getTime() + " - error : "+channel.id+" " + err);
 					});
 				}
@@ -89,8 +85,8 @@ bot.on("message", function(message){
 					console.log(err);
 				} else {
 					var ytLink = "https://www.youtube.com/watch?v="+results.items[0].id.videoId;
-					if(!(ytLink === lastYtLink)) {
-						lastYtLink = ytLink;
+					if(!(ytLink === data.lastYtLink)) {
+						data.lastYtLink = ytLink;
 						console.log(getTime() + " - New Youtube Video: "+ytLink);
 						bot.sendMessage(message.channel, ytLink, function(err) {
 							if(err) console.log(getTime() + " - error: " +channel.id+" "+err);
@@ -98,6 +94,7 @@ bot.on("message", function(message){
 					}
 				}
 			});
+			fs.writeFile("./data.json", JSON.stringify(data));
 		}, timer);
 	}
 	if(message.content === "!BotOff" && botOn && checkUser(message.author.username)) {
