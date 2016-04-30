@@ -17,5 +17,4 @@ Run the bot! Note: Need NodeJS 0.12.7+
 
 ### Todo
 - Killstream
-- CCP youtube feed
 - Ops Scheduler
