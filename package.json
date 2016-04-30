@@ -1,0 +1,31 @@
+{
+  "name": "new-eden-discordbot",
+  "version": "0.1.1",
+  "description": "A Eve News related bot for discord",
+  "main": "config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dhdavvie/new-eden-discordbot.git"
+  },
+  "keywords": [
+    "discord",
+    "eve",
+    "new",
+    "eden"
+  ],
+  "author": "David H",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dhdavvie/new-eden-discordbot/issues"
+  },
+  "homepage": "https://github.com/dhdavvie/new-eden-discordbot#readme",
+  "dependencies": {
+    "discord.js": "^7.0.1",
+    "feed-read": "0.0.1",
+    "moment": "^2.13.0",
+    "youtube-node": "^1.3.0"
+  }
+}
