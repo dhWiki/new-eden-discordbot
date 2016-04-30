@@ -7,7 +7,7 @@ var lastDevBlog = {
 var lastPatchNotes = {
 	title : ""
 };
-var seconds = 5; //timer
+var seconds = 300; //timer
 var timer = seconds * 1000;
 var bot = new Discord.Client();
 var channel;
@@ -18,9 +18,8 @@ bot.login("ech0opulse@gmail.com", "botpassword");
 
 
 bot.on("message", function(message){
-	if(message.content === "a" && !botOn && message.author.username === "Echo Utrigas") {
+	if(message.content === "!BotOn" && !botOn && message.author.username === "Echo Utrigas") {
 		botOn = true;
-		console.log(message.author);
 		
 		console.log("Bot being turned ON");
 		bot.sendMessage(channel, "Dev Blog/Patch Notes RSS Feed ON!", function(err) {if(err) throw err;});
@@ -29,6 +28,7 @@ bot.on("message", function(message){
 				if(err) throw err;
 				if(!(devblogs[0].title === lastDevBlog.title)) {
 					lastDevBlog = devblogs[0]; //set new last article
+					console.log("New dev blog: "+lastDevBlog.link);
 					bot.sendMessage(message.channel, lastDevBlog.link, function(err){
 						if(err) console.log("error : "+channel.id+" " + err);
 					});
@@ -38,6 +38,7 @@ bot.on("message", function(message){
 				if(err) throw err;
 				if(!(patchnotes[0].title === lastPatchNotes.title)) {
 					lastPatchNotes = patchnotes[0]; //set new last article
+					console.log("New patch notes: "+lastPatchNotes.link);
 					bot.sendMessage(message.channel, lastPatchNotes.link, function(err){
 						if(err) console.log("error : "+channel.id+" " + err);
 					});
@@ -45,7 +46,7 @@ bot.on("message", function(message){
 			});
 		}, timer);
 	}
-	if(message.content === "b" && botOn && message.author.username === "Echo Utrigas") {
+	if(message.content === "!BotOff" && botOn && message.author.username === "Echo Utrigas") {
 		botOn = false;
 		console.log("Bot being turned OFF");
 		bot.sendMessage(channel, "Bot turning off!", function(err){if(err) throw err;});
