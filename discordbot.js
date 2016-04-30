@@ -20,7 +20,7 @@ var channel;
 var botOn = false;
 console.log( getTime() + " - Starting Discord Bot");
 
-bot.login("ech0opulse@gmail.com", "botpassword");
+bot.login("botEmail", "botpassword");
 
 function getTime() {
 	var time = "["+moment().format('D/M/YY - h:mm:ss a')+"]";
