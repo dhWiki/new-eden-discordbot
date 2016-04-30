@@ -10,3 +10,8 @@ Download the bot
 
 Run the bot! Note: Need NodeJS 0.12.7+
 > `node discordbot.js`
+
+### Todo
+- Killstream
+- CCP youtube feed
+- Ops Scheduler
