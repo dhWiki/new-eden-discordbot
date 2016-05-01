@@ -5,7 +5,10 @@ var config = require('./config');
 var data = require('./data.js');
 var fs = require('fs');
 
-
+//get cleverbot ready
+var Cleverbot = require('cleverbot-node');
+cleverbot = new Cleverbot;
+//set up youtube api
 var YouTube = require('youtube-node');
 var youtube = new YouTube();
 youtube.setKey(config.youtube_api_key);
@@ -13,21 +16,29 @@ youtube.addParam('channelId', 'UCwF3VyalTHzL0L-GDlwtbRw'); //Eve online channel
 youtube.addParam('order', 'date'); //sort by date
 
 
-
+//various variables
 var seconds = config.timer;
-var timer = seconds * 1000;
-var bot = new Discord.Client();
+var timer = seconds * 1000;//timer for how often to check for updates
 var channel;
 var botOn = false;
+var cleverBotOn = false;
+
 console.log( getTime() + " - Starting Discord Bot");
 
+//set up discord connection
+var options = {
+	autoReconnect : true
+};
+var bot = new Discord.Client(options);
 bot.login(config.discord.username, config.discord.password);
 
+//function to return current time in neat format
 function getTime() {
 	var time = "["+moment().format('D/M/YY - h:mm:ss a')+"]";
 	return time;
 }
 
+//check the user to see if they have the right to the command
 function checkUser(username) {
 	//Could be done using indexOf() but this allows for better error reporting I think
 	for (var i = 0; i < config.admins.length; i++){
@@ -37,10 +48,15 @@ function checkUser(username) {
 	return 0 //User is not an admin and therefor can't turn it on
 }
 
+bot.on("ready", function(){
+	console.log(getTime() + " - Bot is ready");
+	bot.setStatus("online","Your Mum");
+});
+
 bot.on("message", function(message){
 	if(message.content === "!BotOn" && !botOn && checkUser(message.author.username) ) {
 		botOn = true;
-		
+		cleverBotOn = true;
 		console.log(getTime() + " - Bot being turned ON");
 
 		bot.sendMessage(message.channel, "Bot turning ON!", function(err) {if(err) throw err;});
@@ -65,7 +81,7 @@ bot.on("message", function(message){
 					data.setNews(evenews[0].title);
 					console.log(getTime() + " - New Eve news: "+evenews[0].link);
 					bot.sendMessage(message.channel, evenews[0].link, function(err){
-						if(err) console.log(getTime() + " - error : "+channel.id+" " + err);
+						if(err) console.log(getTime() + " - error : "+message.channel.id+" " + err);
 					});
 				}
 			});
@@ -76,7 +92,7 @@ bot.on("message", function(message){
 					data.setPatch(patchnotes[0].title);
 					console.log(getTime() + " - New patch notes: "+patchnotes[0].link);
 					bot.sendMessage(message.channel, patchnotes[0].link, function(err){
-						if(err) console.log(getTime() + " - error : "+channel.id+" " + err);
+						if(err) console.log(getTime() + " - error : "+message.channel.id+" " + err);
 					});
 				}
 			});
@@ -89,7 +105,7 @@ bot.on("message", function(message){
 						data.lastYtLink = ytLink;
 						console.log(getTime() + " - New Youtube Video: "+ytLink);
 						bot.sendMessage(message.channel, ytLink, function(err) {
-							if(err) console.log(getTime() + " - error: " +channel.id+" "+err);
+							if(err) console.log(getTime() + " - error: " +message.channel.id+" "+err);
 						});
 					}
 				}
@@ -99,9 +115,32 @@ bot.on("message", function(message){
 	}
 	if(message.content === "!BotOff" && botOn && checkUser(message.author.username)) {
 		botOn = false;
+		cleverBotOn = false;
 		console.log(getTime() + " - Bot being turned OFF");
 		bot.sendMessage(message.channel, "Bot turning OFF!", function(err){if(err) throw err;});
 	}
 
+	if(message.content === "!CleverBotOn" && !cleverBotOn && checkUser(message.author.username)) {
+		cleverBotOn = true;
+		console.log(getTime() +" - Clevebot turning ON");
+		bot.sendMessage(message.channel, "CleverBot turning ON!", function(err){if(err) throw err;});
+	}
+	if(message.content === "!CleverBotOff" && cleverBotOn && checkUser(message.author.username)) {
+		cleverBotOn = false;
+		console.log(getTime() +" - Clevebot turning OFF");
+		bot.sendMessage(message.channel, "CleverBot turning OFF!", function(err){if(err) throw err;});
+	}
 	
+	//Problem with nickname system, library not updated to support it
+	if(message.isMentioned(bot.user) && cleverBotOn) {
+		Cleverbot.prepare(function(){
+			cleverbot.write(message.content.replace(/ *<[^>]*> */, ""), function(response){
+				bot.reply(message, response.message, function(err){
+					if(err) console.log(getTime() + " - error : "+message.channel.id+" " + err);
+				});
+			});
+		});
+	}
+
+
 });
