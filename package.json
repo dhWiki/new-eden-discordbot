@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/dhdavvie/new-eden-discordbot#readme",
   "dependencies": {
+    "cleverbot-node": "^0.2.1",
     "discord.js": "^7.0.1",
     "feed-read": "0.0.1",
     "fs": "0.0.2",
