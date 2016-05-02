@@ -4,6 +4,7 @@ var moment = require('moment');
 var config = require('./config');
 var data = require('./data.js');
 var fs = require('fs');
+var fits = require('./fits');
 
 //get cleverbot ready
 var Cleverbot = require('cleverbot-node');
@@ -142,5 +143,19 @@ bot.on("message", function(message){
 		});
 	}
 
+	if(message.content.indexOf("!SaveFit") > -1) {
+		console.log(getTime() + " - Saving fit");
+		message.content = message.content.replace('!SaveFit', "");
+		fits.saveFit(message, function(result){
+			bot.sendMessage(message.channel, result, function(err){if(err) throw err;});
+		});
+	}
 
+	if(message.content.indexOf("!GetFit") > -1) {
+		console.log(getTime() + " - Retrieving fit");
+		message.content = message.content.replace('!GetFit', "").trim();
+		fits.getFit(message.content, function(result){
+			bot.sendMessage(message.channel, result, function(err){if(err) throw err;});
+		});
+	}
 });
