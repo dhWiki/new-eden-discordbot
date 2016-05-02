@@ -155,7 +155,7 @@ bot.on("message", function(message){
 		console.log(getTime() + " - Retrieving fit");
 		message.content = message.content.replace('!GetFit', "").trim();
 		fits.getFit(message.content, function(result){
-			bot.sendMessage(message.channel, result, function(err){if(err) throw err;});
+			bot.sendMessage(message.channel, result.replace(/`/g, "'"), function(err){if(err) throw err;});
 		});
 	}
 });
