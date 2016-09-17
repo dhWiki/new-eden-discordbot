@@ -20,7 +20,7 @@ data.lastEveNews = {
 	title : (fileContent === "") ? "" : fileContent.lastEveNews.title
 };
 data.lastYtLink = (fileContent === "") ? "" : fileContent.lastYtLink
-
+data.lastKillID = (fileContent === "") ? 0 : fileContent.lastKillID
 
 module.exports = data;
 
@@ -35,4 +35,7 @@ module.exports.setNews = function(title) {
 }
 module.exports.setYt = function(link) {
 	data.lastYtLink.title = link;
+}
+module.exports.setKillID = function(killID) {
+	data.lastKillID = killID;
 }

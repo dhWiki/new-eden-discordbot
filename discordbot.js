@@ -24,6 +24,7 @@ var timer = seconds * 1000;//timer for how often to check for updates
 var channel;
 var botOn = false;
 var cleverBotOn = false;
+var zkill_url = 'https://zkillboard.com/kill/'
 
 console.log( getTime() + " - Starting Discord Bot");
 
@@ -158,5 +159,16 @@ bot.on("message", function(message){
 		fits.getFit(message.content, function(result){
 			bot.sendMessage(message.channel, result.replace(/`/g, "'"), function(err){if(err) throw err;});
 		});
+	}
+
+	if(message.content.indexOf("!Killstream") > -1 && checkUser(message.author.username)) {
+		setInterval(function(){
+			killstream = zkill.main();
+			if (killstream) {
+				for (var x = killstream.length-1; x > -1; x--) {
+					bot.sendMessage(message.channel, zkill_url + parseInt(killstream[x]), function(err){if(err) throw err;});
+				}
+			}
+		}, timer);
 	}
 });
