@@ -3,8 +3,8 @@ var config = {};
 config.discord = {};
 config.youtube_api_key = 'YoutubeAPIKey';
 
-config.discord.username = 'email@gmail.com';
-config.discord.password = 'botpassword';
+config.discord.username = 'email@example.com';
+config.discord.password = 'password';
 
 config.admins = ['Echo Utrigas'];
 config.timer = 5; //Seconds
