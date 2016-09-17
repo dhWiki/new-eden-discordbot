@@ -16,5 +16,6 @@ config.mysql.host = "localhost";
 config.mysql.database = "discord";
 config.mysql.table = "discord_fits";
 
+config.zkill_corp_id =  '' //The ID of the corp in Zkill for kill stream
 
 module.exports = config;

@@ -3,6 +3,7 @@ var feed = require("feed-read");
 var moment = require('moment');
 var config = require('./config');
 var data = require('./data.js');
+var zkill = require('./zkill.js');
 var fs = require('fs');
 var fits = require('./fits');
 
