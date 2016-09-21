@@ -6,7 +6,6 @@ var data = require('./data.js');
 var zkill = require('./zkill.js');
 var fs = require('fs');
 var fits = require('./fits');
-
 //get cleverbot ready
 var Cleverbot = require('cleverbot-node');
 cleverbot = new Cleverbot;
@@ -24,7 +23,6 @@ var timer = seconds * 1000;//timer for how often to check for updates
 var channel;
 var botOn = false;
 var cleverBotOn = false;
-var zkill_url = 'https://zkillboard.com/kill/'
 
 console.log( getTime() + " - Starting Discord Bot");
 
@@ -33,7 +31,7 @@ var options = {
 	autoReconnect : true
 };
 var bot = new Discord.Client(options);
-bot.login(config.discord.username, config.discord.password);
+bot.login(config.discord.token);
 
 //function to return current time in neat format
 function getTime() {
@@ -51,9 +49,17 @@ function checkUser(username) {
 	return 0 //User is not an admin and therefor can't turn it on
 }
 
-bot.on("ready", function(){
+function logOutput(message) {
+	console.log(getTime() + ' - Sent message: ${message.content}')
+}
+
+bot.on("ready", () => {
 	console.log(getTime() + " - Bot is ready");
-	bot.setStatus("online","Your Mum");
+	bot.user.setStatus("online","Cocaine Simulator 2017");
+});
+
+bot.on('error', (error) => {
+	bot.login(config.discord.token);
 });
 
 bot.on("message", function(message){
@@ -62,7 +68,7 @@ bot.on("message", function(message){
 		cleverBotOn = true;
 		console.log(getTime() + " - Bot being turned ON");
 
-		bot.sendMessage(message.channel, "Bot turning ON!", function(err) {if(err) throw err;});
+		message.channel.sendMessage("Bot turning ON!", function(err) {if(err) throw err;});
 
 		setInterval(function(){ 
 
@@ -72,9 +78,7 @@ bot.on("message", function(message){
 					//data.lastDevBlog = devblogs[0]; //set new data.last article
 					data.setDev(devblogs[0].title);
 					console.log(getTime() + " - New dev blog: "+devblogs[0].link);
-					bot.sendMessage(message.channel, devblogs[0].link, function(err){
-						if(err) console.log(getTime() + " - error : "+channel.id+" " + err);
-					});
+					message.channel.sendMessage(devblogs[0].link).then(message => logOutput(message)).catch(console.log);
 				}
 			});
 			feed("https://newsfeed.eveonline.com/en-US/44/articles/page/1/20", function(err, evenews){
@@ -83,9 +87,7 @@ bot.on("message", function(message){
 					//data.lastEveNews = evenews[0]; //set new data.last article
 					data.setNews(evenews[0].title);
 					console.log(getTime() + " - New Eve news: "+evenews[0].link);
-					bot.sendMessage(message.channel, evenews[0].link, function(err){
-						if(err) console.log(getTime() + " - error : "+message.channel.id+" " + err);
-					});
+					message.channel.sendMessage(evenews[0].link).then(message => logOutput(message)).catch(console.log);
 				}
 			});
 			feed("https://newsfeed.eveonline.com/en-US/15/articles/page/1/5", function(err, patchnotes){
@@ -94,9 +96,7 @@ bot.on("message", function(message){
 					//data.lastPatchNotes = patchnotes[0]; //set new data.last article
 					data.setPatch(patchnotes[0].title);
 					console.log(getTime() + " - New patch notes: "+patchnotes[0].link);
-					bot.sendMessage(message.channel, patchnotes[0].link, function(err){
-						if(err) console.log(getTime() + " - error : "+message.channel.id+" " + err);
-					});
+					message.channel.sendMessage(patchnotes[0].link).then(message => logOutput(message)).catch(console.log);
 				}
 			});
 			youtube.search('', 1, function(err, results) {
@@ -107,9 +107,7 @@ bot.on("message", function(message){
 					if(!(ytLink === data.lastYtLink)) {
 						data.lastYtLink = ytLink;
 						console.log(getTime() + " - New Youtube Video: "+ytLink);
-						bot.sendMessage(message.channel, ytLink, function(err) {
-							if(err) console.log(getTime() + " - error: " +message.channel.id+" "+err);
-						});
+						message.channel.sendMessage(ytLink).then(message => logOutput(message)).catch(console.log);
 					}
 				}
 			});
@@ -120,18 +118,18 @@ bot.on("message", function(message){
 		botOn = false;
 		cleverBotOn = false;
 		console.log(getTime() + " - Bot being turned OFF");
-		bot.sendMessage(message.channel, "Bot turning OFF!", function(err){if(err) throw err;});
+		message.channel.sendMessage("Bot turning OFF!", function(err){if(err) throw err;});
 	}
 
 	if(message.content === "!CleverBotOn" && !cleverBotOn && checkUser(message.author.username)) {
 		cleverBotOn = true;
 		console.log(getTime() +" - Clevebot turning ON");
-		bot.sendMessage(message.channel, "CleverBot turning ON!", function(err){if(err) throw err;});
+		message.channel.sendMessage("CleverBot turning ON!", function(err){if(err) throw err;});
 	}
 	if(message.content === "!CleverBotOff" && cleverBotOn && checkUser(message.author.username)) {
 		cleverBotOn = false;
 		console.log(getTime() +" - Clevebot turning OFF");
-		bot.sendMessage(message.channel, "CleverBot turning OFF!", function(err){if(err) throw err;});
+		message.channel.sendMessage("CleverBot turning OFF!", function(err){if(err) throw err;});
 	}
 	
 	//Problem with nickname system, library not updated to support it
@@ -149,7 +147,7 @@ bot.on("message", function(message){
 		console.log(getTime() + " - Saving fit");
 		message.content = message.content.replace('!SaveFit', "");
 		fits.saveFit(message, function(result){
-			bot.sendMessage(message.channel, result, function(err){if(err) throw err;});
+			message.channel.sendMessage(result, function(err){if(err) throw err;});
 		});
 	}
 
@@ -157,18 +155,14 @@ bot.on("message", function(message){
 		console.log(getTime() + " - Retrieving fit");
 		message.content = message.content.replace('!GetFit', "").trim();
 		fits.getFit(message.content, function(result){
-			bot.sendMessage(message.channel, result.replace(/`/g, "'"), function(err){if(err) throw err;});
+			message.channel.sendMessage(result.replace(/`/g, "'"), function(err){if(err) throw err;});
 		});
 	}
 
 	if(message.content.indexOf("!Killstream") > -1 && checkUser(message.author.username)) {
 		setInterval(function(){
-			killstream = zkill.main();
-			if (killstream) {
-				for (var x = killstream.length-1; x > -1; x--) {
-					bot.sendMessage(message.channel, zkill_url + parseInt(killstream[x]), function(err){if(err) throw err;});
-				}
-			}
+			console.log("Killstream search...")
+			zkill.main(message, timer);
 		}, timer);
 	}
 });

@@ -17,20 +17,20 @@ var options = {
 	}
 };
 
+var zkill_url = 'https://zkillboard.com/kill/'
 
-function main(){
-	var new_kills = []
+module.exports.main = function(message){
 	
 	function callback(error, response, body){
 		if(error) {
 			console.log(error)
 		}
-
+		var new_kills_temp = [];
 		var lastID = data.lastKillID
 		if(response.statusCode == 200){
 			var kills = JSON.parse(body);
 			if (lastID == 0) {
-				new_kills.push(kills[0].killID);
+				new_kills_temp.push(kills[0].killID);
 				lastID = kills[0].killID;
 			} else if (lastID) {
 				//check if limit is big enough, otherwise double
@@ -41,7 +41,7 @@ function main(){
 				} else {
 					for(var x = parseInt(limit)-1; x > -1; x--){
 						if(lastID < kills[x].killID) {
-							new_kills.push(kills[x].killID);
+							new_kills_temp.push(kills[x].killID);
 							lastID = kills[x].killID;
 						}
 
@@ -49,18 +49,26 @@ function main(){
 				}
 			}
 		}
-		console.log(new_kills)
 		data.setKillID(lastID)
+		fs.writeFile("./data.json", JSON.stringify(data));
+		printKills(new_kills_temp)
 	}
 
-
+	function printKills(kills) {
+		console.log(kills)
+		if (kills) {
+			for (var x = 0; x < kills.length; x++) {
+				message.channel.sendMessage(zkill_url + parseInt(kills[x]), function(err){if(err) throw err;}).then(message => console.log(`Sent message: ${message.content}`)).catch(console.log);
+			}
+		}
+	}
 
 	function getKills(){
+		console.log("Fetching Zkillboard")
 		var req = request(options.url, callback);
 	}
 
 	getKills()
-	return new_kills
-}
+};
 
 

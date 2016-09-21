@@ -3,8 +3,7 @@ var config = {};
 config.discord = {};
 config.youtube_api_key = 'YoutubeAPIKey';
 
-config.discord.username = 'email@example.com';
-config.discord.password = 'password';
+config.discord.token = 'token';
 
 config.admins = ['Echo Utrigas'];
 config.timer = 5; //Time in minutes between checks

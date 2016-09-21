@@ -16,13 +16,13 @@ Create database for discord in MySQL
 
 ##Configure
 
-Configure the `config.js` file. [Tutorial for Youtube API key ](https://www.youtube.com/watch?v=Im69kzhpR3I). Set up a user with e-mail and a password on your server, add him to the channel you want the bot to run on. Set the admins (people who can turn bot on and off with `!BotOn` and `!BotOff`), change the timer if you want it to check more or less regularly. Set the parameters of you MySQL service, if you wish to use the fitting service that is.
+Rename `config.js.dist` to `config.js`. Configure the `config.js` file. [Tutorial for Youtube API key ](https://www.youtube.com/watch?v=Im69kzhpR3I). Set the admins (people who can turn bot on and off with `!BotOn` and `!BotOff`), change the timer if you want it to check more or less regularly. Set the parameters of you MySQL service, if you wish to use the fitting service that is.
+
+Create a [Bot User](https://discordapp.com/developers/applications/me#top) and add him to your server using `https://discordapp.com/oauth2/authorize?client_id=CLIENT_ID&scope=bot`. Replace `CLIENT_ID` with the bot Client Id. Place the Token in the config file.
 
 
-
-Run the bot! Note: Need NodeJS 0.12.7+
+Run the bot! Note: Need node v6+
 > `node discordbot.js`
 
 ### Todo
-- Killstream
 - Ops Scheduler
