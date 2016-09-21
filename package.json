@@ -1,8 +1,8 @@
 {
   "name": "new-eden-discordbot",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A Eve News related bot for discord",
-  "main": "config.js",
+  "main": "discordbot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

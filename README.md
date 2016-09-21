@@ -1,4 +1,4 @@
-# new-eden-discordbot v0.1.1
+# new-eden-discordbot v0.2.0
 
 ## Installing Bot
 
